@@ -22,10 +22,12 @@ class SpaceOccupiedError extends Exception {
 
 
 public class MapEnv {
+    //map class that contains the running grid simulating warehouse environment
+
     ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     AtomicInteger[][] grid = new AtomicInteger[10][10];
-    Map<Integer, int[]> activeAgents = new HashMap<>();
-    Map<Integer,Timestamp> history = new HashMap<>();
+    Map<Integer, int[]> activeAgents = new HashMap<>(); //list of activeAgents, prevent rogue agents
+    Map<Integer,Timestamp> history = new HashMap<>(); //for logs and debugging
     public MapEnv(){
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[i].length; j++) {
@@ -35,16 +37,24 @@ public class MapEnv {
     }
     public MapEnv(AtomicInteger[][] grid){this.grid=grid;}
     public void addObstacle(List<int[]> obstacles) {
-        obstacles.forEach(obstacle -> grid[obstacle[0]][obstacle[1]] = new AtomicInteger(1));
+        lock.writeLock().lock();
+        obstacles.forEach(obstacle -> grid[obstacle[0]][obstacle[1]] = new AtomicInteger(-1));
+        lock.writeLock().unlock();
     }
     public void addObstacle(int[] obstacle) {
-        grid[obstacle[0]][obstacle[1]] = new AtomicInteger(1);
+        lock.writeLock().lock();
+        grid[obstacle[0]][obstacle[1]] = new AtomicInteger(-1);
+        lock.writeLock().unlock();
     }
     public void removeObstacle(List<int[]> obstacles) {
+        lock.writeLock().lock();
         obstacles.forEach(obstacle -> grid[obstacle[0]][obstacle[1]] = new AtomicInteger(0));
+        lock.writeLock().unlock();
     }
     public void removeObstacle(int[] obstacle) {
+        lock.writeLock().lock();
         grid[obstacle[0]][obstacle[1]] = new AtomicInteger(0);
+        lock.writeLock().unlock();
     }
     public void addAgent(int agentID, int[] pos) throws DuplicateAgentError, SpaceOccupiedError {
         lock.writeLock().lock();

@@ -1,18 +1,24 @@
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.*;
 
 public class Agent implements Runnable{
-    int[] pos = new int[2];
-    int orientation = 0;
-    List<int[]> path = new ArrayList<>();
-    List<int[]> history = new ArrayList<>();
     MapEnv map; 
     int agentID;
+    List<int[]> path = new ArrayList<>();
+    List<int[]> history = new ArrayList<>();
+    int agentSpeed = 1;
+    int[] pos = new int[]{0,0};
+
     public Agent( int[] pos, MapEnv map, int agentID) {
         this.pos = pos;
         this.map = map;
         this.agentID = agentID;
+    }
+    public Agent( int[] pos, MapEnv map, int agentID, int agentSpeed) {
+        this.pos = pos;
+        this.map = map;
+        this.agentID = agentID;
+        this.agentSpeed = agentSpeed;
     }
     
     //getters
@@ -34,6 +40,9 @@ public class Agent implements Runnable{
     public void run() {
         // extends thread class to run each agent independent of main thread
         // run method will execute the path based on orientation and current position
+
+        //todo agents should perform movement checks to ensure it is safe to do so. 
+        // in realworld it would be lidar.
         if (path.size()!=0) {
             System.out.println("Agent "+agentID+" starts moving");
             try {
@@ -41,7 +50,7 @@ public class Agent implements Runnable{
                     sendUpdate(new Timestamp(System.currentTimeMillis()), p);
                     history.add(this.pos);
                     this.pos = p;
-                    Thread.sleep(1000);
+                    Thread.sleep(1000/agentSpeed); //simulating differen robot speed
                 }
             }catch(Exception e) {
                 System.err.println(e);
