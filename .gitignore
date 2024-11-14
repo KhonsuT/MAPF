@@ -1,7 +1,1 @@
-Agent.class
-DuplicateAgentError.class
-Main.class
-MapEnv.class
-SpaceOccupiedError.class
-UnknownAgentError.class
-UnknownAgentException.class
+*.class
